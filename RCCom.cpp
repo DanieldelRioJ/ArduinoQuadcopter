@@ -8,7 +8,7 @@ void RCCom::setup(HardwareSerial &serial){
 
 void RCCom::loop(){        
     this->ibus.loop();
-    this->roll = 2 * MAX_ANGLE * ((float)this->ibus.readChannel(0)-1500)/1000;
+    this->roll = -2 * MAX_ANGLE * ((float)this->ibus.readChannel(0)-1500)/1000;
     this->pitch = 2 * MAX_ANGLE * ((float)this->ibus.readChannel(1)-1500)/1000;
     this->throttle = ((float)this->ibus.readChannel(2) - 1000) / 10;
     this->yaw = ((float)this->ibus.readChannel(3) - 1000) / 10;
