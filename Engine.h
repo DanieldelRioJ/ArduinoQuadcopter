@@ -6,7 +6,7 @@
 class Engine{
     public:   
         void setup(uint8_t pin); 
-        void setPower(int power); //0 to 100%
+        void setPower(float power); //0 to 100%
 
     private:
         Servo _esc;        

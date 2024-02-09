@@ -13,12 +13,12 @@ void MyMPU::setup(){
     TWBR = 24;
     mpu.initialize();
     mpu.dmpInitialize();
-    mpu.setXAccelOffset(-1878);
-    mpu.setYAccelOffset(-4662);
-    mpu.setZAccelOffset(407);
-    mpu.setXGyroOffset(97);
-    mpu.setYGyroOffset(-37);
-    mpu.setZGyroOffset(-24);
+    mpu.setXAccelOffset(698);
+    mpu.setYAccelOffset(-15);
+    mpu.setZAccelOffset(1110);
+    mpu.setXGyroOffset(89);
+    mpu.setYGyroOffset(-11);
+    mpu.setZGyroOffset(41);
     mpu.setDMPEnabled(true);
     if (mpu.testConnection()) Serial.println("Sensor iniciado correctamente");
     else Serial.println("Error al iniciar el sensor");
@@ -31,7 +31,13 @@ void MyMPU::refreshFifoCount(){
     fifoCount = mpu.getFIFOCount();
 }
 
-void MyMPU::loop(){
+bool MyMPU::loop(){
+
+    if(fifoCount < packetSize){
+        this->refreshFifoCount();
+        return false;
+    }
+
     if (fifoCount == 1024) {
     
         mpu.resetFIFO();
@@ -49,7 +55,6 @@ void MyMPU::loop(){
         else{
     
             while (fifoCount >= packetSize) {
-                Serial.println(F("Reset mpu!"));
                 mpu.getFIFOBytes(fifoBuffer,packetSize);
                 fifoCount -= packetSize;
                 
@@ -58,17 +63,19 @@ void MyMPU::loop(){
             //Serial.println(F("Get data!"));
             mpu.dmpGetQuaternion(&q,fifoBuffer);
             mpu.dmpGetGravity(&gravity,&q);
-            mpu.dmpGetYawPitchRoll(ypr,&q,&gravity);   
+            mpu.dmpGetYawPitchRoll(ypr,&q,&gravity);  
             //this->quadcopterPosition.setYPR(ypr);       
             
-            Serial.print("ypr\t");
+            /*Serial.print("ypr\t");
             Serial.print(ypr[0]*180/PI);
             Serial.print("\t");
             Serial.print(ypr[1]*180/PI);
             Serial.print("\t");
             Serial.print(ypr[2]*180/PI);
-            Serial.println();   
+            Serial.println(); */
+            return true;
         }   
    
     }
+    return false;
 }

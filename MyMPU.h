@@ -18,7 +18,7 @@ class MyMPU {
         float ypr[3];
 
         void setup();
-        void loop();
+        bool loop();
         void refreshFifoCount();
 };
 

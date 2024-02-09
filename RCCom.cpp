@@ -1,15 +1,17 @@
 #include "RCCom.h"
 
+#define MAX_ANGLE 15
+
 void RCCom::setup(HardwareSerial &serial){
     this->ibus.begin(serial, IBUSBM_NOTIMER);
 }
 
 void RCCom::loop(){        
     this->ibus.loop();
-    this->roll = this->ibus.readChannel(0);
-    this->pitch = this->ibus.readChannel(1);
-    this->throttle = this->ibus.readChannel(2);
-    this->yaw = this->ibus.readChannel(3);
+    this->roll = 2 * MAX_ANGLE * ((float)this->ibus.readChannel(0)-1500)/1000;
+    this->pitch = 2 * MAX_ANGLE * ((float)this->ibus.readChannel(1)-1500)/1000;
+    this->throttle = ((float)this->ibus.readChannel(2) - 1000) / 10;
+    this->yaw = ((float)this->ibus.readChannel(3) - 1000) / 10;
     this->p1 = this->ibus.readChannel(4);
     this->p2 = this->ibus.readChannel(5);
     this->intA = this->ibus.readChannel(6);

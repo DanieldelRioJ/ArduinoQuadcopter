@@ -8,10 +8,10 @@ class RCCom{
         void loop();
         void setup(HardwareSerial &serial);
    
-        uint16_t pitch;
-        uint16_t roll;    
-        uint16_t yaw;         
-        uint16_t throttle;        
+        double pitch;
+        double roll;    
+        double yaw;         
+        float throttle;        
         uint16_t p1;
         uint16_t p2;
         
