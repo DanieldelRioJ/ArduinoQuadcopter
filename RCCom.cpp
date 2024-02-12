@@ -1,7 +1,7 @@
 #include "RCCom.h"
 
-#define MAX_ANGLE 15
-#define MAX_ANGLE_SPEED 2 //PER READ
+#define MAX_ANGLE 20
+#define MAX_ANGLE_SPEED 6 //PER READ
 
 void RCCom::setup(HardwareSerial &serial){
     this->ibus.begin(serial, IBUSBM_NOTIMER);

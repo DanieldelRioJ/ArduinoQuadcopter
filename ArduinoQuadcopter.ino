@@ -28,8 +28,8 @@ float ypr[3];
 float lastYaw = 0;
 float yawSpeed = 0;
 
-double Kp=0.5, Ki=0.005, Kd=0.05;
-double KpYaw=2, KiYaw=0, KdYaw=0;
+double Kp=0.4, Ki=0.002, Kd=0.04;
+double KpYaw=8, KiYaw=0.1, KdYaw=0.04;
 double pitchCorrection = 0, rollCorrection = 0, yawCorrection = 0;
 PID pidPitch((double*)&ypr[1], &pitchCorrection, &(rcCom.pitch), Kp, Ki, Kd, P_ON_E, DIRECT);
 PID pidRoll((double*)&ypr[2], &rollCorrection, &(rcCom.roll), Kp, Ki, Kd, P_ON_E, DIRECT);
@@ -38,15 +38,15 @@ PID pidYaw((double*)&yawSpeed, &yawCorrection, &(rcCom.yaw), KpYaw, KiYaw, KdYaw
 void setup() {
 
     Wire.begin();
-    TWBR = 24;
+    Wire.setClock(400000);
     mpu.initialize();
     mpu.dmpInitialize();
-    mpu.setXAccelOffset(698);
-    mpu.setYAccelOffset(-15);
-    mpu.setZAccelOffset(1110);
-    mpu.setXGyroOffset(89);
-    mpu.setYGyroOffset(-11);
-    mpu.setZGyroOffset(41);
+    mpu.setXAccelOffset(712);
+    mpu.setYAccelOffset(-25);
+    mpu.setZAccelOffset(1105);
+    mpu.setXGyroOffset(90);
+    mpu.setYGyroOffset(-12);
+    mpu.setZGyroOffset(37);
     mpu.setDMPEnabled(true);
     packetSize = mpu.dmpGetFIFOPacketSize();
     fifoCount = mpu.getFIFOCount();
@@ -135,7 +135,11 @@ void _loop(){
         Serial.print("\tYawCorrection = ");
         Serial.print(yawCorrection);
         Serial.print("\trollCorrection = ");
-        Serial.println(rcCom.roll);
+        Serial.print(yawSpeed);
+        Serial.print("\trollCorrection = ");
+        Serial.println(((double)rcCom.p2 - 1000) / 10000);
+        _changeTunnings(((double)rcCom.p1 - 1000) / 1000, ((double)rcCom.p2 - 1000) / 10000);
+
         if(rcCom.intD == 1000){
             engineFR.setPower(rcCom.throttle);
             engineFL.setPower(rcCom.throttle);
@@ -154,15 +158,21 @@ void _pidSetup(){
     
     pidPitch.SetMode(AUTOMATIC);
     pidPitch.SetSampleTime(10);
-    pidPitch.SetOutputLimits(-5,5); //-% and +% motor speed correction effect
+    pidPitch.SetOutputLimits(-4,4); //-% and +% motor speed correction effect
 
     pidRoll.SetMode(AUTOMATIC);
     pidRoll.SetSampleTime(10);
-    pidRoll.SetOutputLimits(-5,5); //-% and +% motor speed correction effect    
+    pidRoll.SetOutputLimits(-4,4); //-% and +% motor speed correction effect    
 
     pidYaw.SetMode(AUTOMATIC);
     pidYaw.SetSampleTime(10);
-    pidYaw.SetOutputLimits(-5,5); //-% and +% motor speed correction effect
+    pidYaw.SetOutputLimits(-10,10); //-% and +% motor speed correction effect
+}
+
+void _changeTunnings(double rcKp, double rcKd){
+    pidPitch.SetTunings(rcKp, Ki, rcKd);
+    pidRoll.SetTunings(rcKp, Ki, rcKd);
+    //pidYaw.SetTunings(rcKp*10, rcKd, KdYaw);
 }
 
 void _pidLoop(){
