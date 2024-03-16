@@ -29,7 +29,7 @@ void TelemetryCom::loop(){
 }
 
 void TelemetryCom::sendData(){
-    float voltage = (float)analogRead(A0) / 1024 * 5.3 * 7.6 * 100;
+    float voltage = (float)analogRead(A0) / 1024 * 5.3 * 7.85 * 100;
     this->ibus.setSensorMeasurement(1,this->rpm);        
     this->ibus.setSensorMeasurement(2,voltage);         
     this->ibus.setSensorMeasurement(3,TEMPBASE + 150);        
