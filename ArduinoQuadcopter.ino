@@ -88,16 +88,20 @@ void loop() {
     }
     if (fifoCount == 1024) {    
         mpu.resetFIFO();
+        fifoCount = mpu.getFIFOCount();
         Serial.println(F("FIFO overflow!"));        
     }
     else{    
         if (fifoCount % packetSize != 0) {
+            
             engineFR.setPower(0);
             engineFL.setPower(0);
             engineRR.setPower(0);
             engineRL.setPower(0);
+            _rcLoop();
             Serial.println(F("Reset!"));
-            mpu.resetFIFO();            
+            mpu.resetFIFO();         
+            fifoCount = mpu.getFIFOCount();
         }
         else{    
             while (fifoCount >= packetSize) {            
@@ -121,7 +125,7 @@ void loop() {
             ypr[0] = ypr[0]*180/PI;
             ypr[1] = ypr[1]*180/PI;
             ypr[2] = ypr[2]*180/PI;
-            yawSpeed = ((float)gyro[2])/10000;
+            yawSpeed = ((float)gyro[2])/10000;    
             //yawSpeed = ypr[0] - lastYaw;
             //lastYaw = ypr[0];
 
@@ -140,10 +144,13 @@ void loop() {
 
 }
 
-void _loop(){
+void _rcLoop(){
     telemetryCom.loop();
-    rcCom.loop();    
+    rcCom.loop();   
+}
 
+void _loop(){ 
+    _rcLoop();
     if(newAttitudeData){
         newAttitudeData = false;
         _pidLoop();
